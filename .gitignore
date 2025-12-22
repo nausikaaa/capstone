@@ -7,6 +7,19 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Environment
+.env
+!.env.example
+.env.*
+server/.env
+!server/.env.example
+server/.env.*
+
+# Tooling artifacts
+.claude/
+.cursor/
+apify_storage/
+
 node_modules
 dist
 dist-ssr
@@ -22,3 +35,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+coverage/
+.npmrc

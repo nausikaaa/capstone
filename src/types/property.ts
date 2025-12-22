@@ -3,15 +3,34 @@ export interface PropertyData {
   [key: string]: any; // Flexible to accommodate any Apify response structure
 }
 
-// Extended property with user-added data
+// Property lifecycle stages
+export type PropertyStage = 'new' | 'scheduled' | 'visited' | 'archived';
+
+// Extended property with user-added data (Supabase schema)
 export interface Property {
-  id: string; // Unique identifier (generated client-side)
-  url: string; // Original property URL
-  data: PropertyData; // Raw data from Apify
-  notes: string; // User's personal notes
-  rating: number | null; // User's rating (1-5, or null if not rated)
-  dateAdded: string; // ISO timestamp when property was added
-  dateModified: string; // ISO timestamp when last modified
+  id: string;
+  user_id: string;
+  url: string;
+  scraped_data: PropertyData; // Renamed from 'data' to match Supabase schema
+  notes: string;
+  rating: number | null; // 1-5 stars
+  enthusiasm_score: number | null; // NEW: 1-10 enthusiasm level
+  stage: PropertyStage; // NEW: Property lifecycle stage
+  scheduled_visit_date: string | null; // NEW: When visit is scheduled
+  visited_date: string | null; // NEW: When property was visited
+  created_at: string;
+  updated_at: string;
+}
+
+// Legacy property interface for migration from localStorage
+export interface LegacyProperty {
+  id: string;
+  url: string;
+  data: PropertyData;
+  notes: string;
+  rating: number | null;
+  dateAdded: string;
+  dateModified: string;
 }
 
 // API response types

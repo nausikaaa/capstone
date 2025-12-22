@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import propertiesRouter from './routes/properties.js';
+import analysisRouter from './routes/analysis.js';
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +21,7 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/properties', propertiesRouter);
+app.use('/api/analysis', analysisRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

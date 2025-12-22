@@ -1,10 +1,10 @@
-import type { Property } from '../types/property';
+import type { LegacyProperty } from '../types/property';
 
 const STORAGE_KEY = 'property-tracker-properties';
 
 export const localStorageUtils = {
-  // Get all properties from localStorage
-  getProperties(): Property[] {
+  // Get all properties from localStorage (legacy format only)
+  getProperties(): LegacyProperty[] {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       return stored ? JSON.parse(stored) : [];
@@ -14,8 +14,8 @@ export const localStorageUtils = {
     }
   },
 
-  // Save all properties to localStorage
-  saveProperties(properties: Property[]): void {
+  // Save all properties to localStorage (legacy format only)
+  saveProperties(properties: LegacyProperty[]): void {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(properties));
     } catch (error) {
@@ -24,15 +24,15 @@ export const localStorageUtils = {
     }
   },
 
-  // Add a new property
-  addProperty(property: Property): void {
+  // Add a new property (legacy format only)
+  addProperty(property: LegacyProperty): void {
     const properties = this.getProperties();
     properties.unshift(property); // Add to beginning of array
     this.saveProperties(properties);
   },
 
-  // Update an existing property
-  updateProperty(id: string, updates: Partial<Property>): void {
+  // Update an existing property (legacy format only)
+  updateProperty(id: string, updates: Partial<LegacyProperty>): void {
     const properties = this.getProperties();
     const index = properties.findIndex((p) => p.id === id);
 
@@ -49,14 +49,14 @@ export const localStorageUtils = {
     this.saveProperties(properties);
   },
 
-  // Delete a property
+  // Delete a property (legacy format only)
   deleteProperty(id: string): void {
     const properties = this.getProperties();
     const filtered = properties.filter((p) => p.id !== id);
     this.saveProperties(filtered);
   },
 
-  // Check if a URL already exists
+  // Check if a URL already exists (legacy format only)
   propertyExists(url: string): boolean {
     const properties = this.getProperties();
     return properties.some((p) => p.url === url);

@@ -43,6 +43,34 @@ export class ApiClient {
       return false;
     }
   }
+
+  async analyzeWindows(imageUrls: string[], location?: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/analysis/windows`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageUrls,
+          location: location || 'Barcelona, Spain',
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData: ApiError = await response.json();
+        throw new Error(errorData.message || 'Failed to analyze windows');
+      }
+
+      const result = await response.json();
+      return result.analysis;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error: Failed to connect to the server');
+    }
+  }
 }
 
 export const apiClient = new ApiClient();

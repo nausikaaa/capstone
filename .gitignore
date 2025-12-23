@@ -18,6 +18,7 @@ server/.env.*
 # Tooling artifacts
 .claude/
 .cursor/
+.cursorrules
 apify_storage/
 
 node_modules

@@ -20,7 +20,7 @@ export function KanbanBoard({
   const archivedProperties = properties.filter((p) => p.stage === 'archived');
 
   return (
-    <div className="kanban-board">
+    <div className="kanban-board flex h-screen w-full gap-6 p-6 overflow-x-auto bg-background font-sans">
       <KanbanColumn
         stage="new"
         title="New"

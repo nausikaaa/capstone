@@ -1,4 +1,9 @@
 import { useState, type FormEvent } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Plus, AlertCircle } from 'lucide-react';
 
 interface PropertyFormProps {
   onSubmit: (url: string) => Promise<void>;
@@ -35,21 +40,31 @@ export function PropertyForm({ onSubmit, isLoading }: PropertyFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="property-form">
-      <div className="form-group">
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="Paste Idealista.com property URL here..."
-          className="url-input"
-          disabled={isLoading}
-        />
-        <button type="submit" className="submit-button" disabled={isLoading}>
-          {isLoading ? 'Adding...' : 'Add Property'}
-        </button>
-      </div>
-      {error && <div className="error-message">{error}</div>}
-    </form>
+    <Card className="mb-6">
+      <CardContent className="pt-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="Paste Idealista.com property URL here..."
+              disabled={isLoading}
+              className="flex-1"
+            />
+            <Button type="submit" disabled={isLoading} className="sm:w-auto w-full">
+              <Plus className="w-4 h-4 mr-2" />
+              {isLoading ? 'Adding...' : 'New'}
+            </Button>
+          </div>
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+        </form>
+      </CardContent>
+    </Card>
   );
 }

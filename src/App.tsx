@@ -7,16 +7,16 @@ import { PropertyForm } from './components/PropertyForm';
 import { KanbanBoard } from './components/KanbanBoard';
 import { apiClient } from './services/api';
 import { hasLocalStorageData } from './utils/migration';
-import './App.css';
+import { Button } from '@/components/ui/button';
+import { Toaster } from '@/components/ui/toaster';
+import { useToast } from '@/hooks/use-toast';
+import { LogOut, Loader2 } from 'lucide-react';
 
 function App() {
   const { user, loading: authLoading, signOut } = useAuth();
   const [showMigrationPrompt, setShowMigrationPrompt] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const [notification, setNotification] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
+  const { toast } = useToast();
 
   // Fetch all properties (no filtering needed for kanban)
   const { data: properties = [], isLoading: isLoadingProperties } = useProperties();
@@ -29,12 +29,6 @@ function App() {
       setShowMigrationPrompt(true);
     }
   }, [user]);
-
-  // Show notification with auto-dismiss
-  const showNotification = (type: 'success' | 'error', message: string) => {
-    setNotification({ type, message });
-    setTimeout(() => setNotification(null), 5000);
-  };
 
   // Handle adding a new property
   const handleAddProperty = async (url: string) => {
@@ -69,7 +63,10 @@ function App() {
         visited_date: null,
       });
 
-      showNotification('success', 'Property added successfully!');
+      toast({
+        title: "Success",
+        description: "Property added successfully!",
+      });
     } catch (error) {
       console.error('Error adding property:', error);
       throw error; // Re-throw to let form handle it
@@ -84,10 +81,17 @@ function App() {
       { id, updates },
       {
         onSuccess: () => {
-          showNotification('success', 'Property updated');
+          toast({
+            title: "Success",
+            description: "Property updated",
+          });
         },
         onError: () => {
-          showNotification('error', 'Failed to update property');
+          toast({
+            title: "Error",
+            description: "Failed to update property",
+            variant: "destructive",
+          });
         },
       }
     );
@@ -97,10 +101,17 @@ function App() {
   const handleDeleteProperty = (id: string) => {
     deleteProperty.mutate(id, {
       onSuccess: () => {
-        showNotification('success', 'Property deleted');
+        toast({
+          title: "Success",
+          description: "Property deleted",
+        });
       },
       onError: () => {
-        showNotification('error', 'Failed to delete property');
+        toast({
+          title: "Error",
+          description: "Failed to delete property",
+          variant: "destructive",
+        });
       },
     });
   };
@@ -108,9 +119,11 @@ function App() {
   // Show loading screen while checking authentication
   if (authLoading) {
     return (
-      <div className="loading-screen">
-        <div className="loading-spinner"></div>
-        <p>Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -121,7 +134,7 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <div className="min-h-screen bg-background">
       {showMigrationPrompt && (
         <MigrationPrompt
           userId={user.id}
@@ -129,34 +142,37 @@ function App() {
         />
       )}
 
-      <header className="app-header">
-        <div className="header-content">
-          <div>
-            <h1>🏠 Property Tracker</h1>
-            <p>Track and organize your property viewings</p>
-          </div>
-          <div className="header-actions">
-            <span className="user-email">{user.email}</span>
-            <button onClick={() => signOut()} className="sign-out-button">
-              Sign Out
-            </button>
+      <header className="border-b bg-card">
+        <div className="container mx-auto px-4 py-4 max-w-7xl">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                🏠 Property Tracker
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Track and organize your property viewings
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground hidden sm:inline">
+                {user.email}
+              </span>
+              <Button onClick={() => signOut()} variant="outline" size="sm">
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
-      {notification && (
-        <div className={`notification ${notification.type}`}>
-          {notification.message}
-        </div>
-      )}
-
-      <main className="app-main">
+      <main className="container mx-auto px-4 py-6 max-w-7xl">
         <PropertyForm onSubmit={handleAddProperty} isLoading={isAdding} />
 
         {isLoadingProperties ? (
-          <div className="loading-properties">
-            <div className="loading-spinner"></div>
-            <p>Loading properties...</p>
+          <div className="flex flex-col items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground">Loading properties...</p>
           </div>
         ) : (
           <KanbanBoard
@@ -170,6 +186,8 @@ function App() {
           />
         )}
       </main>
+
+      <Toaster />
     </div>
   );
 }
